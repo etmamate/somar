@@ -1,0 +1,191 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.login-page {
+  background-color: #f4f7f6;
+  display: flex;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+.login-container {
+  width: 35%;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 5%;
+  box-shadow: 10px 0 20px rgba(0, 0, 0, 0.02);
+  z-index: 2;
+}
+
+.header-section {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.header-section h1 {
+  color: #4cc9a1;
+  font-size: 32pt;
+  letter-spacing: 2px;
+  margin: 0 0 5px;
+}
+
+.header-section p {
+  color: #1b2b36;
+  font-weight: bold;
+  font-size: 11pt;
+  margin: 0;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-group label {
+  display: block;
+  color: #1b2b36;
+  font-size: 9pt;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.input-wrapper {
+  display: flex;
+  height: 45px;
+}
+
+.input-wrapper input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background-color: #f4f7f6;
+  padding: 0 15px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  font-size: 10pt;
+  color: #333333;
+}
+
+.input-wrapper input:focus {
+  box-shadow: inset 0 0 0 2px rgba(76, 201, 161, 0.35);
+}
+
+.input-wrapper input::placeholder {
+  color: #a0a0a0;
+}
+
+.icon-box {
+  width: 45px;
+  flex: 0 0 45px;
+  background-color: #4cc9a1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.icon-box svg {
+  width: 20px;
+  height: 20px;
+  fill: #ffffff;
+}
+
+.field-error {
+  color: #b42318;
+  font-size: 8.5pt;
+  margin: 7px 0 0;
+}
+
+.form-message {
+  border-radius: 4px;
+  font-size: 9pt;
+  font-weight: 600;
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  text-align: center;
+}
+
+.form-message-error {
+  background-color: #fef3f2;
+  color: #b42318;
+}
+
+.form-message-success {
+  background-color: #ecfdf3;
+  color: #027a48;
+}
+
+.button-group {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.btn {
+  width: 100%;
+  max-width: 200px;
+  min-height: 45px;
+  border-radius: 6px;
+  font-size: 11pt;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.btn-login {
+  background-color: #4cc9a1;
+  color: #ffffff;
+  border: none;
+}
+
+.btn-login:hover:not(:disabled) {
+  background-color: #3eb08c;
+  transform: translateY(-2px);
+}
+
+.btn-login:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.btn-register {
+  background-color: transparent;
+  color: #4cc9a1;
+  border: 2px solid #4cc9a1;
+}
+
+.btn-register:hover {
+  background-color: rgba(76, 201, 161, 0.05);
+  transform: translateY(-2px);
+}
+
+.image-container {
+  width: 65%;
+  background-color: #f4f7f6;
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    width: 100%;
+  }
+
+  .image-container {
+    display: none;
+  }
+}
