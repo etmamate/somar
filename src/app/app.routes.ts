@@ -12,6 +12,11 @@ export const routes: Routes = [
       import('./features/login/login.component').then((m) => m.LoginComponent)
   },
   {
+    path: 'campanhas',
+    loadComponent: () =>
+      import('./features/campanhas/campanhas.component').then((m) => m.CampanhasComponent)
+  },
+  {
     path: '**',
     redirectTo: ''
   }

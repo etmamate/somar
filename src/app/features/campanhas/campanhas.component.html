@@ -1,0 +1,96 @@
+<main class="campaign-page">
+  <nav class="navbar">
+    <a routerLink="/" class="logo">SOMAR</a>
+    <div class="nav-auth">
+      <a routerLink="/" class="btn-small btn-outline">Sair</a>
+      <a href="#" class="btn-small btn-fill" aria-disabled="true">Minha ONG</a>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <h1>Descobrir Impacto</h1>
+    <div class="tabs">
+      <a class="tab-item active" href="#">Campanhas</a>
+      <a class="tab-item" href="#">ONGs</a>
+      <a class="tab-item" href="#">Serviços</a>
+    </div>
+  </header>
+
+  <section class="container" aria-labelledby="campaigns-title">
+    <div class="section-title">
+      <h2 id="campaigns-title">Campanhas Atuais</h2>
+      <div class="filter-bar" aria-label="Filtros de campanhas">
+        <button
+          type="button"
+          class="filter-btn"
+          [class.active]="activeFilter() === 'recentes'"
+          (click)="setFilter('recentes')"
+        >
+          Recentes
+        </button>
+        <button
+          type="button"
+          class="filter-btn"
+          [class.active]="activeFilter() === 'ativas'"
+          (click)="setFilter('ativas')"
+        >
+          Ativas
+        </button>
+        <button
+          type="button"
+          class="filter-btn"
+          [class.active]="activeFilter() === 'finalizadas'"
+          (click)="setFilter('finalizadas')"
+        >
+          Finalizadas
+        </button>
+      </div>
+    </div>
+
+    @if (isLoading()) {
+      <div class="state-box" role="status">Carregando campanhas...</div>
+    } @else if (errorMessage()) {
+      <div class="state-box state-error" role="alert">
+        <p>{{ errorMessage() }}</p>
+        <button type="button" class="btn-retry" (click)="carregarCampanhas()">Tentar novamente</button>
+      </div>
+    } @else if (campanhasFiltradas().length === 0) {
+      <div class="state-box">
+        Nenhuma campanha encontrada para este filtro.
+      </div>
+    } @else {
+      <div class="grid-container">
+        @for (campanha of campanhasFiltradas(); track campanha.id; let index = $index) {
+          <article class="card">
+            <div
+              class="card-image"
+              [style.background-image]="'url(' + imageUrl(index) + ')'"
+              aria-hidden="true"
+            ></div>
+            <div class="card-body">
+              <div class="card-meta">
+                <span class="tag">{{ statusLabel(campanha) }}</span>
+                <span class="ong-name">{{ campanha.ong.nome }}</span>
+              </div>
+              <h3 class="card-title">{{ campanha.titulo }}</h3>
+              <p class="card-description">{{ campanha.descricao }}</p>
+              <div class="progress-container">
+                <div class="progress-bar" aria-hidden="true">
+                  <div class="progress-fill" [style.width.%]="percentual(campanha)"></div>
+                </div>
+                <div class="progress-text">
+                  <span>{{ percentualLabel(campanha) }}</span>
+                  <span>Meta: {{ valorLabel(campanha.meta) }}</span>
+                </div>
+                <div class="raised-value">
+                  Arrecadado: {{ valorLabel(campanha.valoratual) }}
+                </div>
+              </div>
+              <a href="#" class="btn-card">Apoiar Agora</a>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</main>
