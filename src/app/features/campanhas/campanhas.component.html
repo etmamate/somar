@@ -2,16 +2,24 @@
   <nav class="navbar">
     <a routerLink="/" class="logo">SOMAR</a>
     <div class="nav-auth">
-      <a routerLink="/" class="btn-small btn-outline">Sair</a>
-      <a href="#" class="btn-small btn-fill" aria-disabled="true">Minha ONG</a>
+      @if (currentUser()) {
+        <a href="#" (click)="$event.preventDefault(); logout()" class="btn-small btn-outline">
+          Sair ({{ currentUser()?.nome }})
+        </a>
+        @if (currentUser()?.tipo === 'ONG' || currentUser()?.tipo === 'ADMIN') {
+          <a routerLink="/campanhas/painel" class="btn-small btn-fill">Minha ONG</a>
+        }
+      } @else {
+        <a routerLink="/login" class="btn-small btn-outline">Login</a>
+      }
     </div>
   </nav>
 
   <header class="page-header">
     <h1>Descobrir Impacto</h1>
     <div class="tabs">
-      <a class="tab-item active" href="#">Campanhas</a>
-      <a class="tab-item" href="#">ONGs</a>
+      <a class="tab-item active" routerLink="/campanhas">Campanhas</a>
+      <a class="tab-item" routerLink="/ongs">ONGs</a>
       <a class="tab-item" href="#">Serviços</a>
     </div>
   </header>

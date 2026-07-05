@@ -1,0 +1,217 @@
+<div class="page-container">
+  
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-title">
+      <h1>Editar Campanha</h1>
+      <p>Atualize as informações, o status e as metas da sua causa social.</p>
+    </div>
+    <a routerLink="/campanhas/painel" class="back-link">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      Voltar ao Painel
+    </a>
+  </div>
+
+  <!-- Grid Layout -->
+  <div class="content-grid">
+    
+    <!-- Left Column: Form -->
+    <main class="card-container">
+      <h2>Dados da Campanha</h2>
+
+      @if (successMessage()) {
+        <div class="feedback-msg success" role="status">
+          {{ successMessage() }}
+        </div>
+      }
+      @if (errorMessage()) {
+        <div class="feedback-msg error" role="alert">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        
+        <div class="form-row">
+          <!-- ID -->
+          <div class="form-group">
+            <label>Identificador da Campanha (ID)</label>
+            <input 
+              type="text" 
+              [value]="campaignId() || ''" 
+              class="input-control" 
+              readonly 
+              style="background-color: #edf2f7; cursor: not-allowed; color: #718096;"
+            >
+          </div>
+
+          <!-- Status Select -->
+          <div class="form-group">
+            <label for="status">Status da Campanha</label>
+            <select id="status" formControlName="status" class="input-control">
+              <option value="ATIVA">Ativa (Aberta)</option>
+              <option value="FINALIZADA">Finalizada (Encerrada)</option>
+              <option value="CANCELADA">Cancelada</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Title -->
+        <div class="form-group full-width">
+          <label for="titulo">Título da Campanha</label>
+          <input 
+            type="text" 
+            id="titulo" 
+            formControlName="titulo" 
+            class="input-control" 
+            placeholder="Ex: Cestas Básicas para Comunidade X"
+          >
+          @if (form.controls.titulo.touched && form.controls.titulo.invalid) {
+            <span class="validation-error">O título deve conter entre 5 e 100 caracteres.</span>
+          }
+        </div>
+
+        <div class="form-row">
+          <!-- Goal (Meta) -->
+          <div class="form-group">
+            <label for="meta">Meta de Arrecadação (R$)</label>
+            <input 
+              type="number" 
+              id="meta" 
+              formControlName="meta" 
+              class="input-control" 
+              placeholder="0.00" 
+              min="0.01" 
+              step="0.01"
+            >
+            @if (form.controls.meta.touched && form.controls.meta.invalid) {
+              <span class="validation-error">A meta de arrecadação deve ser maior que zero.</span>
+            }
+          </div>
+
+          <!-- Current Value (Valor Atual) -->
+          <div class="form-group">
+            <label for="valoratual">Valor Arrecadado Atual (R$)</label>
+            <input 
+              type="number" 
+              id="valoratual" 
+              formControlName="valoratual" 
+              class="input-control" 
+              placeholder="0.00" 
+              min="0" 
+              step="0.01"
+            >
+            @if (form.controls.valoratual.touched && form.controls.valoratual.invalid) {
+              <span class="validation-error">O valor arrecadado deve ser maior ou igual a zero.</span>
+            }
+          </div>
+        </div>
+
+        <!-- End Date -->
+        <div class="form-group full-width">
+          <label for="diafinalizado">Data Finalização (Prazo)</label>
+          <input 
+            type="datetime-local" 
+            id="diafinalizado" 
+            formControlName="diafinalizado" 
+            class="input-control"
+          >
+          @if (form.controls.diafinalizado.touched && form.controls.diafinalizado.invalid) {
+            <span class="validation-error">Defina uma data de finalização futura.</span>
+          }
+        </div>
+
+        <!-- Description -->
+        <div class="form-group full-width">
+          <label for="descricao">Descrição Detalhada</label>
+          <textarea 
+            id="descricao" 
+            formControlName="descricao" 
+            class="input-control" 
+            placeholder="Forneça detalhes de como as doações serão distribuídas..."
+          ></textarea>
+          @if (form.controls.descricao.touched && form.controls.descricao.invalid) {
+            <span class="validation-error">A descrição deve ter pelo menos 15 caracteres.</span>
+          }
+        </div>
+
+        <!-- Submit & Cancel buttons -->
+        <div class="btn-actions">
+          <button type="button" (click)="cancelar()" class="btn btn-cancel">Cancelar</button>
+          <button type="submit" class="btn btn-save" [disabled]="isLoading() && form.invalid">
+            Salvar Alterações
+          </button>
+        </div>
+      </form>
+    </main>
+
+    <!-- Right Column: Live Preview -->
+    <aside class="preview-sticky">
+      <div class="preview-label">
+        Visualização em Tempo Real
+      </div>
+
+      <div class="preview-card">
+        <div class="preview-banner" [style.background-image]="'url(' + bannerUrl() + ')'">
+          <div class="preview-overlay">
+            <div>
+              <div class="preview-ong-info">
+                <div class="preview-ong-avatar">
+                  {{ (originalCampaign()?.ong?.nome?.charAt(0) || 'I').toUpperCase() }}
+                </div>
+                <span>{{ originalCampaign()?.ong?.nome || 'Instituto Somar' }}</span>
+              </div>
+            </div>
+          </div>
+          <span 
+            class="preview-status-badge" 
+            [class.badge-ativa]="form.controls.status.value === 'ATIVA'"
+            [class.badge-finalizada]="form.controls.status.value === 'FINALIZADA'"
+            [class.badge-cancelada]="form.controls.status.value === 'CANCELADA'"
+          >
+            {{ previewStatusLabel }}
+          </span>
+        </div>
+
+        <div class="preview-body">
+          <h3 class="preview-title">{{ previewTitle }}</h3>
+          <p class="preview-desc">{{ previewDesc }}</p>
+          
+          <!-- Progress info -->
+          <div class="preview-progress-box">
+            <div class="preview-progress-bar">
+              <div class="preview-progress-fill" [style.width.%]="previewProgressPercent"></div>
+            </div>
+            <div class="preview-progress-text">
+              <span>{{ previewProgressPercent }}% Arrecadado</span>
+              <span class="preview-percent">
+                {{ formatCurrency(previewCurrentValue) }} / {{ formatCurrency(previewGoal) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Grid values -->
+          <div class="preview-meta-details">
+            <div class="meta-item">
+              <span>Arrecadado</span>
+              <span class="meta-value-current">{{ formatCurrency(previewCurrentValue) }}</span>
+            </div>
+            <div class="meta-item">
+              <span>Meta Final</span>
+              <span>{{ formatCurrency(previewGoal) }}</span>
+            </div>
+          </div>
+
+          <!-- Date info -->
+          @if (previewEndDate) {
+            <div class="preview-date-info">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+              <span>Encerra em: <strong>{{ previewEndDate }}</strong></span>
+            </div>
+          }
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>

@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { UsuariosApiService } from '../../core/services/usuarios-api.service';
@@ -17,6 +18,7 @@ type LoginForm = {
 })
 export class LoginComponent {
   private readonly usuariosApi = inject(UsuariosApiService);
+  private readonly router = inject(Router);
 
   protected readonly form = new FormGroup<LoginForm>({
     email: new FormControl('', {
@@ -51,8 +53,17 @@ export class LoginComponent {
       .login(this.form.getRawValue())
       .pipe(finalize(() => this.isSubmitting.set(false)))
       .subscribe({
-        next: (message) => {
-          this.successMessage.set(message || 'Usuario Logado');
+        next: (user) => {
+          this.successMessage.set(`Bem-vindo, ${user.nome}!`);
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          
+          setTimeout(() => {
+            if (user.tipo === 'ONG' || user.tipo === 'ADMIN') {
+              this.router.navigate(['/campanhas/painel']);
+            } else {
+              this.router.navigate(['/campanhas']);
+            }
+          }, 1200);
         },
         error: () => {
           this.errorMessage.set('Email ou senha invalidos');

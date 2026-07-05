@@ -1,8 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
-import { Campanha } from '../../core/models/somar-api.models';
+import { Campanha, Usuario } from '../../core/models/somar-api.models';
 import { toApiErrorView } from '../../core/services/api-error.util';
 import { CampanhasApiService } from '../../core/services/campanhas-api.service';
 
@@ -16,6 +16,7 @@ type CampanhaFilter = 'recentes' | 'ativas' | 'finalizadas';
 })
 export class CampanhasComponent implements OnInit {
   private readonly campanhasApi = inject(CampanhasApiService);
+  private readonly router = inject(Router);
   private readonly cardImages = [
     'https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=500&q=60',
     'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=500&q=60',
@@ -27,9 +28,24 @@ export class CampanhasComponent implements OnInit {
   protected readonly isLoading = signal(true);
   protected readonly errorMessage = signal('');
   protected readonly activeFilter = signal<CampanhaFilter>('recentes');
+  protected readonly currentUser = signal<Usuario | null>(null);
 
   ngOnInit(): void {
+    const localUser = localStorage.getItem('currentUser');
+    if (localUser) {
+      try {
+        this.currentUser.set(JSON.parse(localUser));
+      } catch (e) {
+        console.error('Failed to parse local user', e);
+      }
+    }
     this.carregarCampanhas();
+  }
+
+  protected logout(): void {
+    localStorage.removeItem('currentUser');
+    this.currentUser.set(null);
+    this.router.navigate(['/']);
   }
 
   protected carregarCampanhas(): void {

@@ -1,0 +1,130 @@
+<main class="dashboard-page">
+  <nav class="navbar">
+    <a routerLink="/" class="logo">SOMAR</a>
+    <div class="user-profile" style="display: flex; gap: 20px; align-items: center;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span id="nav-ong-name">{{ currentUser()?.nome || 'Minha ONG' }}</span>
+        <div class="avatar" id="nav-ong-avatar">{{ (currentUser()?.nome?.charAt(0) || 'M').toUpperCase() }}</div>
+      </div>
+      <a href="#" (click)="$event.preventDefault(); logout()" class="btn-small btn-outline" style="padding: 6px 12px; border-radius: 4px; border: 1.5px solid var(--border-color); color: var(--gray-text); text-decoration: none; font-size: 9pt; font-weight: bold; transition: 0.3s;">Sair</a>
+    </div>
+  </nav>
+
+  <div class="dashboard-content">
+    
+    <!-- Coluna de Cadastro -->
+    <section class="form-section">
+      <h2>Nova Campanha</h2>
+      
+      @if (successMessage()) {
+        <div class="feedback-msg success" role="status">
+          {{ successMessage() }}
+        </div>
+      }
+      @if (errorMessage()) {
+        <div class="feedback-msg error" role="alert">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="form-group">
+          <label for="titulo">Título da Campanha</label>
+          <input 
+            type="text" 
+            id="titulo" 
+            formControlName="titulo" 
+            placeholder="Ex: Natal sem Fome 2026"
+          >
+          @if (form.controls.titulo.touched && form.controls.titulo.invalid) {
+            <span class="validation-error">O título deve conter entre 5 e 100 caracteres.</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="meta">Meta de Arrecadação (R$)</label>
+          <input 
+            type="number" 
+            id="meta" 
+            formControlName="meta" 
+            placeholder="0.00"
+            min="0.01"
+            step="0.01"
+          >
+          @if (form.controls.meta.touched && form.controls.meta.invalid) {
+            <span class="validation-error">A meta deve ser maior que R$ 0,00.</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="descricao">Descrição Completa</label>
+          <textarea 
+            id="descricao" 
+            formControlName="descricao" 
+            placeholder="Conte os detalhes da causa e como o dinheiro será utilizado..."
+          ></textarea>
+          @if (form.controls.descricao.touched && form.controls.descricao.invalid) {
+            <span class="validation-error">A descrição deve ter pelo menos 15 caracteres.</span>
+          }
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="isLoading() && form.invalid">Publicar Campanha</button>
+      </form>
+    </section>
+
+    <!-- Coluna de Listagem -->
+    <section class="list-section">
+      <div class="list-header">
+        <h2>Minhas Campanhas</h2>
+      </div>
+
+      <table class="campaign-table">
+        <thead>
+          <tr>
+            <th>Campanha</th>
+            <th>Meta</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (isLoading() && campaigns().length === 0) {
+            <tr>
+              <td colspan="4" style="text-align: center; color: var(--gray-text); padding: 30px;">Carregando campanhas...</td>
+            </tr>
+          } @else if (campaigns().length === 0) {
+            <tr>
+              <td colspan="4" style="text-align: center; color: var(--gray-text); padding: 30px;">Nenhuma campanha cadastrada.</td>
+            </tr>
+          } @else {
+            @for (camp of campaigns(); track camp.id) {
+              <tr>
+                <td>
+                  <div class="campaign-title">{{ camp.titulo }}</div>
+                  <div style="font-size: 8pt; color: var(--gray-text); margin-top: 4px;">
+                    ID: {{ camp.id }} • Criada em {{ formatDisplayDate(camp.datacriacao) }}
+                  </div>
+                </td>
+                <td class="campaign-goal">{{ formatCurrency(camp.meta) }}</td>
+                <td>
+                  <span 
+                    class="status-badge" 
+                    [class.status-active]="camp.status === 'ATIVA'"
+                    [class.status-finished]="camp.status === 'FINALIZADA'"
+                    [class.status-canceled]="camp.status === 'CANCELADA'"
+                  >
+                    {{ camp.status === 'ATIVA' ? 'Ativa' : (camp.status === 'FINALIZADA' ? 'Finalizada' : 'Cancelada') }}
+                  </span>
+                </td>
+                <td class="action-btns">
+                  <button class="btn-icon" [routerLink]="['/campanhas/editar', camp.id]" title="Editar Campanha">✎</button>
+                  <button class="btn-icon delete" (click)="excluirCampanha(camp.id)" title="Excluir Campanha">🗑</button>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </section>
+  </div>
+</main>

@@ -28,9 +28,7 @@ export class UsuariosApiService {
     });
   }
 
-  login(request: LoginRequest): Observable<string> {
-    return this.http.post(`${this.baseUrl}/login`, request, {
-      responseType: 'text'
-    });
+  login(request: LoginRequest): Observable<Usuario> {
+    return this.http.post<Usuario>(`${this.baseUrl}/login`, request);
   }
 }

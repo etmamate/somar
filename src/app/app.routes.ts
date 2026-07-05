@@ -17,6 +17,21 @@ export const routes: Routes = [
       import('./features/campanhas/campanhas.component').then((m) => m.CampanhasComponent)
   },
   {
+    path: 'ongs',
+    loadComponent: () =>
+      import('./features/ongs/ongs.component').then((m) => m.OngsComponent)
+  },
+  {
+    path: 'campanhas/painel',
+    loadComponent: () =>
+      import('./features/campanhas-painel/campanhas-painel.component').then((m) => m.CampanhasPainelComponent)
+  },
+  {
+    path: 'campanhas/editar/:id',
+    loadComponent: () =>
+      import('./features/campanhas-editar/campanhas-editar.component').then((m) => m.CampanhasEditarComponent)
+  },
+  {
     path: '**',
     redirectTo: ''
   }

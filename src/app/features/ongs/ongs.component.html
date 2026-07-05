@@ -1,0 +1,86 @@
+<main class="ongs-page">
+  <nav class="navbar">
+    <a routerLink="/" class="logo">SOMAR</a>
+    <div class="nav-auth">
+      @if (currentUser()) {
+        <a href="#" (click)="$event.preventDefault(); logout()" class="btn-small btn-outline">
+          Sair ({{ currentUser()?.nome }})
+        </a>
+        @if (currentUser()?.tipo === 'ONG' || currentUser()?.tipo === 'ADMIN') {
+          <a routerLink="/campanhas/painel" class="btn-small btn-fill">Minha ONG</a>
+        }
+      } @else {
+        <a routerLink="/login" class="btn-small btn-outline">Login</a>
+      }
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <h1>Descobrir Impacto</h1>
+    <div class="tabs">
+      <a class="tab-item" routerLink="/campanhas">Campanhas</a>
+      <a class="tab-item active" routerLink="/ongs">ONGs</a>
+      <a class="tab-item" href="#">Serviços</a>
+    </div>
+  </header>
+
+  <section class="container" aria-labelledby="ongs-title">
+    <div class="section-title">
+      <h2 id="ongs-title">ONGs Parceiras</h2>
+      <p class="section-subtitle">Conheça as organizações que transformam intenções em ações reais.</p>
+    </div>
+
+    @if (isLoading()) {
+      <div class="state-box" role="status">Carregando organizações...</div>
+    } @else if (errorMessage()) {
+      <div class="state-box state-error" role="alert">
+        <p>{{ errorMessage() }}</p>
+        <button type="button" class="btn-retry" (click)="carregarOngs()">Tentar novamente</button>
+      </div>
+    } @else if (ongs().length === 0) {
+      <div class="state-box">
+        Nenhuma organização cadastrada no momento.
+      </div>
+    } @else {
+      <div class="grid-container">
+        @for (ong of ongs(); track ong.id) {
+          <article class="ong-card">
+            <div class="ong-card-header">
+              <div class="ong-avatar">
+                {{ getOngInitials(ong.nome) }}
+              </div>
+              <div class="ong-basic-info">
+                <h3 class="ong-name">{{ ong.nome }}</h3>
+                <span class="ong-location">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                  {{ ong.cidade }} - {{ ong.estado }}
+                </span>
+              </div>
+            </div>
+            
+            <div class="ong-card-body">
+              <p class="ong-description">{{ ong.descricao }}</p>
+              
+              <div class="ong-extra-details">
+                <div class="ong-detail-item">
+                  <span class="detail-label">Contato</span>
+                  <span class="detail-value">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="margin-right: 4px;"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-2.2 2.2a15.045 15.045 0 0 1-6.59-6.59l2.2-2.2c.28-.28.36-.67.25-1.02C8.79 6.34 8.59 5.15 8.59 3.92A1 1 0 0 0 7.59 3H3.92c-.5 0-.91.41-.91.9 0 9.38 7.63 17 17 17 .49 0 .9-.41.9-.91v-3.72c0-.5-.41-.91-.9-.91z"/></svg>
+                    {{ ong.telefone || 'Não informado' }}
+                  </span>
+                </div>
+
+                <div class="ong-detail-item">
+                  <span class="detail-label">Status de Projetos</span>
+                  <span class="detail-badge">
+                    {{ getCampanhasCountLabel(ong) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</main>
